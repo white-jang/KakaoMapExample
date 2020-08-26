@@ -6,6 +6,9 @@ let options = { //지도를 생성할 때 필요한 기본 옵션
 
 var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 var ps = new kakao.maps.services.Places(); // 장소 검색 객체 생성
+var marker = undefined;
+var infowindow = undefined;
+
 
 // 버튼 누르거나 Enter 눌렀을 때 검색이 되도록 만들기
 let search_btn = document.querySelector(".search-btn");
@@ -26,10 +29,15 @@ search_bar.addEventListener("keyup", () => {
     if (event.keyCode == 13) {
         search_btn.click(); // 버튼을 클릭한 것과 동일한 효과
     }
+
 });
 
 function keywordSearch(keyword) {
     ps.keywordSearch(keyword, keywordSearchCallback);
+    if (marker !== undefined) { // 새롭게 검색할 경우 기존 마커와 인포윈도우 삭제
+        marker.setMap(null);
+        infowindow.close();
+    }
 }
 
 // 키워드 검색 완료 시 호출되는 콜백함수 입니다
@@ -40,7 +48,7 @@ function keywordSearchCallback(data, status, pagination) {
         map.setCenter(center);
 
         // 마커를 생성합니다
-        var marker = new kakao.maps.Marker({
+        marker = new kakao.maps.Marker({
             position: center
         });
 
@@ -53,7 +61,7 @@ function keywordSearchCallback(data, status, pagination) {
             iwPosition = center;
 
         // 인포윈도우를 생성합니다
-        var infowindow = new kakao.maps.InfoWindow({
+        infowindow = new kakao.maps.InfoWindow({
             position: iwPosition,
             content: iwContent
         });
